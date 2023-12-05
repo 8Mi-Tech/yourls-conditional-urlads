@@ -41,6 +41,9 @@ function conditional_urlads_process_request() {
         if ( isset( $_POST[ 'linkvertise_id' ] ) ) {
             yourls_update_option( 'conditional_urlads_linkvertise_id', $_POST[ 'linkvertise_id' ] );
         }
+        if ( isset( $_POST[ 'shortest_id' ] ) ) {
+            yourls_update_option( 'conditional_urlads_shortest_id', $_POST[ 'shortest_id' ] );
+        }
         yourls_update_option( 'conditional_urlads_random_adurl_bool', isset( $_POST[ 'random_adurl_bool' ] ) );
         $response = array('success' => true, 'message' => yourls__( 'Save Complete', 'conditional_urlads' ));
         echo json_encode($response);  // 输出 JSON 数据
@@ -53,13 +56,9 @@ function conditional_urlads_loadpage() {
     include 'settings.php';
 }
 
-define( 'ADFLY_ID', yourls_get_option( 'conditional_urlads_adfly_id' ) );// Replace this with your Adfly ID
-define( 'ADFOCUS_ID', yourls_get_option( 'conditional_urlads_adfoc_id' ) );// Replace this with your Adfoc.us ID
-define( 'OUO_ID', yourls_get_option( 'conditional_urlads_ouoio_id' ) );// You get the drill
-define( 'LINKVERTISE_ID', yourls_get_option( 'conditional_urlads_linkvertise_id' ) );// You get the drill
 define( 'RANDOM_ADURL_BOOL', yourls_get_option( 'conditional_urlads_random_adurl_bool' ) );
-define( 'ADFLY_DOMAIN', 'https://adf.ly' );// If you have a custom Adfly domain, replace this with it
-define( 'ADFOCUS_DOMAIN', 'https://adfoc.us' );// Same for this
+define( 'ADFLY_DOMAIN', 'https://adf.ly' );
+define( 'ADFOCUS_DOMAIN', 'https://adfoc.us' );
 define( 'OUO_DOMAIN', 'https://ouo.io' );
 
 yourls_add_action( 'loader_failed', 'check_for_redirect' );// On url fail, check here
@@ -84,23 +83,30 @@ function check_for_redirect( $args ) {
 
 define( 'TRIGGERS', array( 'a/', 'f/', 'o/', 'l/', 'r/' ) );// Add any possible trigger to use here
 function redirect_to_advert( $url, $code ) {
+    $ADFLY_ID = yourls_get_option( 'conditional_urlads_adfly_id' );
+    $ADFOC_ID = yourls_get_option( 'conditional_urlads_adfoc_id' );
+    $OUOIO_ID = yourls_get_option( 'conditional_urlads_ouoio_id' );
+    $SHORTEST_ID = yourls_get_option( 'conditional_urlads_shortest_id' );
+    $LINKVERTISE_ID = yourls_get_option( 'conditional_urlads_linkvertise_id' );    
     if ( doAdvert ) {
         $redirectUrl = getRedirect(['type' => 'minus', 'in-string' => redirectService]);
         mt_srand();
         switch ( redirectService ) {
-            case 'f': // Use adfocus
-                return ADFOCUS_DOMAIN . '/serve/sitelinks/?id=' . ADFOCUS_ID . '&url=' . $redirectUrl;
-            case 'a': // Adfly
-                return ADFLY_DOMAIN . '/' . ADFLY_ID . '/' . $redirectUrl;
-            case 'o': // OUO.io
-                return OUO_DOMAIN . '/qs/' . OUO_ID . '?s=' . $redirectUrl;
-            case 'l': // linkvertise.com
-                return 'https://link-to.net/' . LINKVERTISE_ID . '/' . strval( mt_rand()*1000 ) . '/dynamic?r=' . base64_encode( utf8_encode( $redirectUrl ) );
             case 'r': //Random AdUrl
                 if ( RANDOM_ADURL_BOOL ) {
-                    $keywords = [ 'a', 'f', 'o', 'l' ];
-                    return getRedirect(['type' => 'replace', 'in-string' => 'r', 'out-string' => $keywords[mt_rand(0, 3)]]);
+                    $keywords = [ 'a', 'f', 'l', 'o', 's' ];
+                    return getRedirect(['type' => 'replace', 'in-string' => 'r', 'out-string' => $keywords[mt_rand(0, 4)]]);
                 }
+            case 'a': // Adf.ly
+                return ADFLY_DOMAIN . "/$ADFLY_ID/$redirectUrl";
+            case 'f': // acfoc.us
+                return ADFOCUS_DOMAIN . "/serve/sitelinks/?id=$ADFOC_ID&url=$redirectUrl";
+            case 'o': // OuO.io
+                return OUO_DOMAIN . "/qs/$OUOIO_ID?s=$redirectUrl";
+            case 'l': // linkvertise.com
+                return 'https://link-to.net/' . $LINKVERTISE_ID . '/' . strval( mt_rand()*1000 ) . '/dynamic?r=' . base64_encode( utf8_encode( $redirectUrl ) );
+            case 's': // Shorte.st
+                return "https://sh.st/st/$SHORTEST_ID/$redirectUrl";
         }
     }
     return $url;

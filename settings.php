@@ -6,7 +6,7 @@ function add_title_label($websile, $id_name, $string, $url){
     echo <<<HTML
     <tr valign="center">
         <th scope="row">{$websile}</th>
-        <th><input type="text" name="{$id_name}" value='{$id}' /></th>
+        <th><input type="text" name="{$id_name}" value='{$id}' size="30" /></th>
         <th>a/</th>
         <th><a href="{$url}">{$url}</a></th>
     </tr>
@@ -102,5 +102,6 @@ add_title_label('Adf.ly', 'adfly_id', 'a/', 'https://8mi.ink/a/ref-adfly');
 add_title_label('Adfoc.us', 'adfoc_id', 'f/', 'https://8mi.ink/f/ref-adfoc');
 add_title_label('OuO.io', 'ouoio_id', 'o/', 'https://8mi.ink/o/ref-ouoio');
 add_title_label('Linkvertise', 'linkvertise_id', 'l/', 'https://8mi.ink/l/ref-linkvertise');
+add_title_label('Shorte.st', 'shortest_id', 's/', 'https://8mi.ink/s/ref-shortest');
 display_settings_table_end();
 ?>
