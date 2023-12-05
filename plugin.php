@@ -81,7 +81,7 @@ function check_for_redirect( $args ) {
     }
 }
 
-define( 'TRIGGERS', array( 'a/', 'f/', 'o/', 'l/', 'r/' ) );// Add any possible trigger to use here
+define( 'TRIGGERS', array( 'a/', 'f/', 'o/', 'l/', 's/', 'r/') );// Add any possible trigger to use here
 function redirect_to_advert( $url, $code ) {
     $ADFLY_ID = yourls_get_option( 'conditional_urlads_adfly_id' );
     $ADFOC_ID = yourls_get_option( 'conditional_urlads_adfoc_id' );
