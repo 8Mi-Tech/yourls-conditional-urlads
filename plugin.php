@@ -63,14 +63,15 @@ define( 'OUO_DOMAIN', 'https://ouo.io' );
 
 yourls_add_action( 'loader_failed', 'check_for_redirect' );// On url fail, check here
 function check_for_redirect( $args ) {
-    $regex = '!^'. implode( $TRIGGERS, '|' ) .'(.*)!';
+    // 正确方式：参数顺序 (分隔符, 数组)
+    $regex = '!^'. implode( '|', (array)$TRIGGERS ) .'(.*)!';
     // Match any trigger
     if ( preg_match( $regex, $args[ 0 ], $matches ) ) {
-        define( redirectService, $matches[ 0 ][ 0 ] );
+        define( 'redirectService', $matches[ 0 ][ 0 ] );
         // first charachter of the redirect == service to use
         $keyword = substr( yourls_sanitize_keyword( $matches[ 1 ] ), 1 );
         // The new keyword, sub trigger
-        define( doAdvert, true );
+        define( 'doAdvert', true );
         // let our advert function know to redirect
         yourls_add_filter( 'redirect_location', 'redirect_to_advert' );
         // Add our ad-forwarding function
